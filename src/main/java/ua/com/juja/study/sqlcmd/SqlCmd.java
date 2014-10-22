@@ -1,6 +1,5 @@
 package ua.com.juja.study.sqlcmd;
 
-
 import ua.com.juja.study.sqlcmd.config.SqlCmdConfig;
 import ua.com.juja.study.sqlcmd.database.DatabaseConnection;
 import ua.com.juja.study.sqlcmd.database.mock.MockDatabaseExecutor;
