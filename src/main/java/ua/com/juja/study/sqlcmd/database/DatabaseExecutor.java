@@ -18,4 +18,3 @@ public interface DatabaseExecutor {
 
     public abstract void changeDatabase(String databaseName);
 }
-
