@@ -28,6 +28,7 @@ public class MockDatabaseExecutor implements DatabaseExecutor {
 
     @Override
     public Row[] executeSqlScript(String sqlScript) {
+        System.out.println("Executed script " + sqlScript);
         return new Row[0];
     }
 
