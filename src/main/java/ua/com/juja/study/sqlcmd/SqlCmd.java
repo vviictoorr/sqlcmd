@@ -1,18 +1,39 @@
 package ua.com.juja.study.sqlcmd;
 
 import ua.com.juja.study.sqlcmd.config.SqlCmdConfig;
-import ua.com.juja.study.sqlcmd.database.DatabaseConnection;
 import ua.com.juja.study.sqlcmd.database.mock.MockDatabaseExecutor;
+import ua.com.juja.study.sqlcmd.engine.KeyboardManager;
+import ua.com.juja.study.sqlcmd.sql.QueryHistory;
+
+import java.io.IOException;
 
 /**
  */
 public class SqlCmd {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         SqlCmdConfig config = parseCmdOption(args);
-        if (!validateCmdOption(config))
+        if (!validateCmdOption(config)) {
             System.out.println("args[] is correct ");
-        else System.exit(1);
-        DatabaseConnection connection = new MockDatabaseExecutor().connectToDb(config);
+            QueryHistory queryHistory = new QueryHistory() {
+                @Override
+                public String getNextQuery() {
+                    return "";
+                }
+
+                @Override
+                public String getPreviousQuery() {
+                    return "";
+                }
+
+                @Override
+                public void addQueryToTheHead(String query) {
+
+                }
+            };
+
+            KeyboardManager keyboardManager = new KeyboardManager(queryHistory, new MockDatabaseExecutor());
+            keyboardManager.startListenUserKeyboard();
+        } else System.exit(1);
     }
 
     public static SqlCmdConfig parseCmdOption(String[] args) {
