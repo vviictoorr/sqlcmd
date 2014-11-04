@@ -1,37 +1,38 @@
 package ua.com.juja.study.sqlcmd.sql;
 
-import java.util.ArrayList;
-
 /**
  * Created by VICTOR on 31.10.2014.
  */
 public class ArrayQueryHistory implements QueryHistory {
-
-    private static ArrayList<String> queryCount = new ArrayList<String>();
-    private static final int QUERY_COUNT = 4;
+    private static final int NO_QUARY_IN_ARRAY = -1;
+    private int indexQuary = NO_QUARY_IN_ARRAY;
+    private static String[] queryCount = new String[QUERY_BUFFER_COUNT];
 
     @Override
     public String getNextQuery() {
-        if (!queryCount.isEmpty()) {
-            return queryCount.get(QUERY_COUNT - 1);
+        if (indexQuary < 0) {
+            indexQuary = QUERY_BUFFER_COUNT - 1;
+            return queryCount[indexQuary--];
         }
-        return null;
+        return queryCount[indexQuary--];
     }
 
     @Override
     public String getPreviousQuery() {
-        if (!queryCount.isEmpty()) {
-            return queryCount.get(1);
+        if (indexQuary == QUERY_BUFFER_COUNT - 2) {
+            indexQuary = 0;
+            return queryCount[indexQuary++];
         }
-        return null;
+        return queryCount[indexQuary++];
     }
 
     @Override
     public void addQueryToTheHead(String query) {
-        if (queryCount.size() >= QUERY_COUNT) {
-            queryCount.remove(QUERY_COUNT - 1);
+        if (indexQuary < QUERY_BUFFER_COUNT - 1) {
+            indexQuary++;
+            queryCount[indexQuary] = query;
+        } else {
+            queryCount[0] = query;
         }
-        queryCount.add(0, query);
     }
-
 }
