@@ -29,18 +29,27 @@ public class KeyboardManager {
     }
 
     public void startListenUserKeyboard() throws IOException {
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
         boolean quit = false;
+        StringBuilder query = new StringBuilder();
         while (!quit) {
-            String query = reader.readLine();
-            if ("\\q".equals(query)) {
+            String line = reader.readLine();
+            if ("\\q".equals(line)) {
                 quit = true;
-            } else {
-                executeQuery(query);
+            } else if (!line.isEmpty()) {
+                addQuery(query, line);
             }
         }
+    }
 
+    private void addQuery(StringBuilder query, String line) {
+        query.append(line);
+        char endChar = line.charAt(line.length() - 1);
+        if (endChar == ';') {
+            executeQuery(query.toString());
+            query.delete(0, query.length());
+        } else {
+            query.append(" ");
+        }
     }
 }
