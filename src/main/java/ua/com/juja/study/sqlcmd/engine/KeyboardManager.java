@@ -37,12 +37,12 @@ public class KeyboardManager {
             if ("\\q".equals(line)) {
                 quit = true;
             } else if (!line.isEmpty()) {
-                addQuery(query, line);
+                addQueryAndExecuteIfQueryFinished(query, line);
             }
         }
     }
 
-    private void addQuery(StringBuilder query, String line) {
+    private void addQueryAndExecuteIfQueryFinished(StringBuilder query, String line) {
         query.append(line);
         char endChar = line.charAt(line.length() - 1);
         if (endChar == ';') {
