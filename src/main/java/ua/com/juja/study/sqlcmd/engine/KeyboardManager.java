@@ -1,6 +1,7 @@
 package ua.com.juja.study.sqlcmd.engine;
 
 import ua.com.juja.study.sqlcmd.database.DatabaseExecutor;
+import ua.com.juja.study.sqlcmd.database.QueryResult;
 import ua.com.juja.study.sqlcmd.database.Row;
 import ua.com.juja.study.sqlcmd.sql.QueryHistory;
 
@@ -23,9 +24,14 @@ public class KeyboardManager {
         this.databaseExecutor = databaseExecutor;
     }
 
-    public Row[] executeQuery(String query) {
+    public QueryResult executeQuery(String query) {
         history.addQueryToTheHead(query);
-        return databaseExecutor.executeSqlScript(query);
+        try {
+            return databaseExecutor.executeSqlScript(query);
+        } catch (Exception e) {
+            System.out.println("Got exception when execute script" + e.getMessage());
+            return new QueryResult(new Row[]{});
+        }
     }
 
     public void startListenUserKeyboard() throws IOException {

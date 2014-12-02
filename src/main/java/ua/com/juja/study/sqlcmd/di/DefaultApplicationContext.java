@@ -1,11 +1,15 @@
 package ua.com.juja.study.sqlcmd.di;
 
 import ua.com.juja.study.sqlcmd.config.SqlCmdConfig;
+import ua.com.juja.study.sqlcmd.database.AsyncDatabaseExecutor;
 import ua.com.juja.study.sqlcmd.database.DatabaseExecutor;
 import ua.com.juja.study.sqlcmd.database.mock.MockDatabaseExecutor;
 import ua.com.juja.study.sqlcmd.engine.KeyboardManager;
 import ua.com.juja.study.sqlcmd.sql.ArrayQueryHistory;
 import ua.com.juja.study.sqlcmd.sql.QueryHistory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by VICTOR on 23.11.2014.
@@ -16,12 +20,14 @@ public class DefaultApplicationContext implements ApplicationContext {
     private QueryHistory queryHistory;
     private DatabaseExecutor databaseExecutor;
     private KeyboardManager keyboardManager;
+    private ExecutorService executorService;
 
     public DefaultApplicationContext(SqlCmdConfig config) {
         this.config = config;
-        databaseExecutor = new MockDatabaseExecutor();
+        databaseExecutor = new AsyncDatabaseExecutor(new MockDatabaseExecutor());
         queryHistory = new ArrayQueryHistory();
         keyboardManager = new KeyboardManager(queryHistory, databaseExecutor);
+        executorService = Executors.newFixedThreadPool(5);
     }
 
     @Override
@@ -37,5 +43,14 @@ public class DefaultApplicationContext implements ApplicationContext {
     @Override
     public KeyboardManager getKeyboardManager() {
         return keyboardManager;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    @Override
+    public void shutdown() {
+        executorService.shutdown();
     }
 }
