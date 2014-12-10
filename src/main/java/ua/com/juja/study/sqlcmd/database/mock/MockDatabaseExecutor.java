@@ -1,6 +1,5 @@
 package ua.com.juja.study.sqlcmd.database.mock;
 
-import ua.com.juja.study.sqlcmd.config.SqlCmdConfig;
 import ua.com.juja.study.sqlcmd.database.DatabaseExecutor;
 import ua.com.juja.study.sqlcmd.database.QueryResult;
 import ua.com.juja.study.sqlcmd.database.Row;
@@ -19,12 +18,6 @@ public class MockDatabaseExecutor implements DatabaseExecutor {
 
     public String getCurrentDatabase() {
         return MOCK_DATABASES[currentDatabaseIndex];
-    }
-
-    @Override
-    public boolean connectToDb(SqlCmdConfig config) {
-        System.out.println("Database connection established with config " + config);
-        return true;
     }
 
     @Override
