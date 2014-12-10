@@ -17,6 +17,9 @@
 
 - JdbcDatabaseExecutor
     *00:48:52 main
+        - Error when execute script This ResultSet is closed.
+        - Error when execute script Operation requires a scrollable ResultSet, but this ResultSet is FORWARD_ONLY.
+        - Error when execute script The column index is out of range: 0, number of columns: 2.
 
 - interface DatabaseExecutor
 
@@ -24,5 +27,5 @@
 
 - QueryResult ...
 
-
+Ctrl + Alt + N - refactor inline
 
