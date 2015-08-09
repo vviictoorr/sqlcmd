@@ -4,10 +4,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Created by VICTOR on 02.12.2014.
+ * Created with IntelliJ IDEA.
+ * User: viktor
+ * Date: 11/27/14
+ * Time: 12:30 PM
  */
 public class QueryResult {
-
     private Row[] rowList;
     private Future<Row[]> futureRowList;
     private String[] columnNames;
@@ -27,7 +29,7 @@ public class QueryResult {
         try {
             return futureRowList.get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new DatabaseException("Exception with async execution " + e.getMessage());
+            throw new DatabaseException("\nException with async execution " + e.getMessage() + "\n\n");
         }
     }
 
@@ -38,7 +40,15 @@ public class QueryResult {
         return futureRowList.isDone();
     }
 
-    public String[] getColumnNames() {
+    public String[] getColumnNames() throws DatabaseException {
+        if (columnNames == null) {
+            Row[] rows = getRowList();
+            if (rows.length > 0) {
+                columnNames = rows[0].getColumnNames();
+                return columnNames;
+            } else
+                return new String[0];
+        }
         return columnNames;
     }
 

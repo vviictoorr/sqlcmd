@@ -8,6 +8,7 @@ import ua.com.juja.study.sqlcmd.database.Row;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static ua.com.juja.study.sqlcmd.database.Row.ROWS_AFFECTED;
@@ -19,34 +20,6 @@ import static ua.com.juja.study.sqlcmd.database.Row.ROWS_AFFECTED;
  * Time: 12:05 PM
  */
 public class JdbcDatabaseExecutor implements DatabaseExecutor {
-    public static void main(String[] args) throws DatabaseException, SQLException {
-//        Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/juja");
-
-        SqlCmdConfig config = new SqlCmdConfig();
-        config.setDbUrl("jdbc:postgresql://localhost:5432/juja");
-        config.setDriverName("org.postgresql.Driver");
-        config.setUserName("juja_core");
-        config.setPassword("juja");
-        JdbcDatabaseExecutor executor = new JdbcDatabaseExecutor(config);
-
-        QueryResult result = executor.executeSqlScript("select * from participations");
-        printResult(result);
-    }
-
-    private static void printResult(QueryResult result) throws DatabaseException {
-        String[] columns = result.getColumnNames();
-        for (String column : columns) {
-            System.out.print(column + " | ");
-        }
-        System.out.println();
-        Row[] rows = result.getRowList();
-        for (Row row : rows) {
-            for (String column : columns) {
-                System.out.print(row.getValue(column) + " | ");
-            }
-            System.out.println();
-        }
-    }
 
     private Connection connection;
 
@@ -66,12 +39,19 @@ public class JdbcDatabaseExecutor implements DatabaseExecutor {
     @Override
     public QueryResult executeSqlScript(String sqlScript) throws DatabaseException {
         String query = sqlScript.toLowerCase().trim();
+
         PreparedStatement statement = null;
         try {
             if (query.startsWith("select")) {
+//                System.out.println("test2 -- " + query);
                 statement = connection.prepareStatement(sqlScript);
                 ResultSet rs = statement.executeQuery();
                 QueryResult result = mapResultSet(rs);
+//                System.out.println(result);
+//                for (String s : result.getColumnNames()) {
+//                    System.out.println(s);
+//                }
+
                 return result;
             } else {
                 statement = connection.prepareStatement(sqlScript);
@@ -88,6 +68,7 @@ public class JdbcDatabaseExecutor implements DatabaseExecutor {
 
     private void closeStatement(PreparedStatement statement) throws DatabaseException {
         if (statement == null) return;
+
         try {
             statement.close();
         } catch (SQLException e) {
@@ -101,7 +82,6 @@ public class JdbcDatabaseExecutor implements DatabaseExecutor {
         row.addColumnValue(ROWS_AFFECTED, rowsUpdated);
         rows[0] = row;
         QueryResult result = new QueryResult(rows);
-        result.setColumnNames(ROWS_AFFECTED);
         return result;
     }
 
@@ -117,7 +97,6 @@ public class JdbcDatabaseExecutor implements DatabaseExecutor {
         }
         Row[] arrayRows = rows.toArray(new Row[rows.size()]);
         QueryResult queryResult = new QueryResult(arrayRows);
-        queryResult.setColumnNames(columnNames);
         return queryResult;
     }
 
@@ -133,11 +112,58 @@ public class JdbcDatabaseExecutor implements DatabaseExecutor {
 
     @Override
     public String[] getDatabaseList() throws DatabaseException {
-        throw new UnsupportedOperationException("Not implemented");
+        List<String> databases = new ArrayList<>();
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet rs = metaData.getCatalogs();
+            while (rs.next()) {
+                databases.add(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException(e.getMessage());
+        }
+
+        return databases.toArray(new String[databases.size()]);
     }
 
     @Override
     public void changeDatabase(String databaseName) throws DatabaseException {
         throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public static void main(String[] args) throws DatabaseException {
+        SqlCmdConfig config = new SqlCmdConfig();
+        config.setDbUrl("jdbc:postgresql://localhost:5432/juja");
+        config.setDriverName("org.postgresql.Driver");
+        config.setUserName("juja_core");
+        config.setPassword("juja");
+        JdbcDatabaseExecutor executor = new JdbcDatabaseExecutor(config);
+
+//        System.out.println(Arrays.toString(executor.getDatabaseList()));
+//        QueryResult updateResult = executor.executeSqlScript("update participations set email='kuchin.victor1@gmail.com' where " +
+//                "email='kuchin2.victor@gmail.com';");
+//        printResult(updateResult);
+//
+//        QueryResult insertResult = executor.executeSqlScript("insert into participations values " +
+//                "('jujad@juja.com.ua', 'JuJaD')");
+//        printResult(insertResult);
+//
+        QueryResult result = executor.executeSqlScript("select * from participations;");
+        printResult(result);
+    }
+
+    private static void printResult(QueryResult result) throws DatabaseException {
+        String[] columns = result.getColumnNames();
+        for (String column : columns) {
+            System.out.print(column + " | ");
+        }
+        System.out.println();
+        Row[] rows = result.getRowList();
+        for (Row row : rows) {
+            for (String column : columns) {
+                System.out.print(row.getValue(column) + " | ");
+            }
+            System.out.println();
+        }
     }
 }

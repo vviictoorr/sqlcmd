@@ -1,8 +1,5 @@
 package ua.com.juja.study.sqlcmd.sql;
 
-/**
- * Created by VICTOR on 31.10.2014.
- */
 public class ArrayQueryHistory implements QueryHistory {
 
     private String[] queryList = new String[QUERY_BUFFER_COUNT];

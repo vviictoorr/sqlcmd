@@ -7,7 +7,10 @@ import ua.com.juja.study.sqlcmd.sql.QueryHistory;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Created by VICTOR on 23.11.2014.
+ * Created with IntelliJ IDEA.
+ * User: viktor
+ * Date: 11/19/14
+ * Time: 2:14 PM
  */
 public interface ApplicationContext {
 

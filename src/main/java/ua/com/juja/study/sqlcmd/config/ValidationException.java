@@ -1,9 +1,13 @@
 package ua.com.juja.study.sqlcmd.config;
 
 /**
- * Created by VICTOR on 23.11.2014.
+ * Created with IntelliJ IDEA.
+ * User: viktor
+ * Date: 11/19/14
+ * Time: 1:44 PM
  */
 public class ValidationException extends Exception {
+
     public ValidationException() {
     }
 

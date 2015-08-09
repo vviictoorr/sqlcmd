@@ -2,8 +2,9 @@ package ua.com.juja.study.sqlcmd.di;
 
 import ua.com.juja.study.sqlcmd.config.SqlCmdConfig;
 import ua.com.juja.study.sqlcmd.database.AsyncDatabaseExecutor;
+import ua.com.juja.study.sqlcmd.database.DatabaseException;
 import ua.com.juja.study.sqlcmd.database.DatabaseExecutor;
-import ua.com.juja.study.sqlcmd.database.mock.MockDatabaseExecutor;
+import ua.com.juja.study.sqlcmd.database.jdbc.JdbcDatabaseExecutor;
 import ua.com.juja.study.sqlcmd.engine.KeyboardManager;
 import ua.com.juja.study.sqlcmd.sql.ArrayQueryHistory;
 import ua.com.juja.study.sqlcmd.sql.QueryHistory;
@@ -12,7 +13,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by VICTOR on 23.11.2014.
+ * Created with IntelliJ IDEA.
+ * User: viktor
+ * Date: 11/19/14
+ * Time: 2:20 PM
  */
 public class DefaultApplicationContext implements ApplicationContext {
 
@@ -22,13 +26,15 @@ public class DefaultApplicationContext implements ApplicationContext {
     private KeyboardManager keyboardManager;
     private ExecutorService executorService;
 
-    public DefaultApplicationContext(SqlCmdConfig config) {
+    public DefaultApplicationContext(SqlCmdConfig config) throws DatabaseException {
         this.config = config;
-        databaseExecutor = new AsyncDatabaseExecutor(new MockDatabaseExecutor());
+        executorService = Executors.newFixedThreadPool(5);
+        databaseExecutor = new AsyncDatabaseExecutor(new JdbcDatabaseExecutor(config));
         queryHistory = new ArrayQueryHistory();
         keyboardManager = new KeyboardManager(queryHistory, databaseExecutor);
-        executorService = Executors.newFixedThreadPool(5);
     }
+
+
 
     @Override
     public QueryHistory getQueryHistory() {
@@ -53,4 +59,6 @@ public class DefaultApplicationContext implements ApplicationContext {
     public void shutdown() {
         executorService.shutdown();
     }
+
+
 }

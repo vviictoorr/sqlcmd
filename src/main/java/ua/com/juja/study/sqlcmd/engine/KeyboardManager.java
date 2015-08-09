@@ -1,13 +1,14 @@
 package ua.com.juja.study.sqlcmd.engine;
 
+import jline.ConsoleReader;
+import ua.com.juja.study.sqlcmd.SqlCmd;
 import ua.com.juja.study.sqlcmd.database.DatabaseExecutor;
 import ua.com.juja.study.sqlcmd.database.QueryResult;
 import ua.com.juja.study.sqlcmd.database.Row;
+import ua.com.juja.study.sqlcmd.io.ConsoleFormattedQueryResultWriter;
 import ua.com.juja.study.sqlcmd.sql.QueryHistory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,43 +20,36 @@ public class KeyboardManager {
     private QueryHistory history;
     private DatabaseExecutor databaseExecutor;
 
-    public KeyboardManager(QueryHistory history, DatabaseExecutor databaseExecutor) {
-        this.history = history;
+    public KeyboardManager(QueryHistory queryHistory, DatabaseExecutor databaseExecutor) {
+        this.history = queryHistory;
         this.databaseExecutor = databaseExecutor;
     }
 
-    public QueryResult executeQuery(String query) {
-        history.addQueryToTheHead(query);
-        try {
-            return databaseExecutor.executeSqlScript(query);
-        } catch (Exception e) {
-            System.out.println("Got exception when execute script" + e.getMessage());
-            return new QueryResult(new Row[]{});
-        }
-    }
-
     public void startListenUserKeyboard() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        boolean quit = false;
-        StringBuilder query = new StringBuilder();
-        while (!quit) {
-            String line = reader.readLine();
-            if ("\\q".equals(line)) {
-                quit = true;
-            } else if (!line.isEmpty()) {
-                addQueryAndExecuteIfQueryFinished(query, line);
+        String query = null;
+        ConsoleFormattedQueryResultWriter queryResultWriter = new ConsoleFormattedQueryResultWriter();
+        ConsoleReader consoleReader = new ConsoleReader();
+        queryResultWriter.setApplicationContext(SqlCmd.getApplicationContext());
+        while ((query = consoleReader.readLine()) != null) {
+            if (!query.isEmpty()) {
+                queryResultWriter.writeQueryResult(executeQuery(query));
             }
         }
     }
 
-    private void addQueryAndExecuteIfQueryFinished(StringBuilder query, String line) {
-        query.append(line);
-        char endChar = line.charAt(line.length() - 1);
-        if (endChar == ';') {
-            executeQuery(query.toString());
-            query.delete(0, query.length());
-        } else {
-            query.append(" ");
+    public QueryResult executeQuery(String query) {
+        history.addQueryToTheHead(query);
+//        System.out.println("test1 -- " + query);
+
+        if (query.compareTo("q;")==0) {
+            System.exit(-1);
+        }
+        try {
+            return databaseExecutor.executeSqlScript(query);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.print("\nGot exception when execute script " + e.getMessage() + "\n\n");
+            return new QueryResult(new Row[]{});
         }
     }
 }

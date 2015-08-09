@@ -8,7 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * Created by VICTOR on 02.12.2014.
+ * Created with IntelliJ IDEA.
+ * User: viktor
+ * Date: 11/27/14
+ * Time: 12:17 PM
  */
 public class AsyncDatabaseExecutor implements DatabaseExecutor {
 

@@ -5,7 +5,10 @@ import ua.com.juja.study.sqlcmd.database.QueryResult;
 import java.io.IOException;
 
 /**
- * Created by VICTOR on 03.12.2014.
+ * Created with IntelliJ IDEA.
+ * User: viktor
+ * Date: 11/27/14
+ * Time: 12:57 PM
  */
 public interface ResultWriter {
     public void writeQueryResult(QueryResult queryResult) throws IOException;
