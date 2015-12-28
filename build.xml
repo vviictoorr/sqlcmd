@@ -1,0 +1,65 @@
+<project name="SqlCmd" basedir="." default="main">
+
+    <property name="src.dir" value="src/main/java"/>
+    <!--<property name="args" value="-u juja_core -p juja -d org.postgresql.Driver -url jdbc:postgresql://localhost:5432/juja"/>-->
+
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir" value="${build.dir}/jar"/>
+
+    <property name="main-class" value="ua.com.juja.study.sqlcmd.SqlCmd"/>
+
+    <property name="lib.dir" value="lib"/>
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+            <!--<compilerarg line="-u juja_core -p juja -d org.postgresql.Driver -url jdbc:postgresql://localhost:5432/juja"/>-->
+            <!--<compilerarg line="${args}"/>-->
+
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+                <!--<attribute name="-u" value="juja_core"/>-->
+
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+        <!--<java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>-->
+        <java fork="true" classname="${main-class}">
+
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${jar.dir}/${ant.project.name}.jar"/>
+            </classpath>
+            <!--<arg line="-u juja_core -p juja"/>-->
+            <!--<arg line="-u juja_core -p juja -d org.postgresql.Driver"/>-->
+            <!--value arg db url is incorrect;-->
+
+            <!--<arg line="-u juja_core -p juja -url jdbc:postgresql://localhost:5432/juja -d org.postgresql.Driver"/>-->
+            <!--value arg driver name is incorrect;-->
+
+            <!--postgresql-9.3-1102.jdbc41.jar-->
+            <!--<arg line="-u juja_core -p juja -d org.postgresql.Driver -url jdbc:postgresql://localhost:5432/juja"/>-->
+
+        </java>
+    </target>
+
+    <target name="clean-build" depends="clean,jar"/>
+
+    <target name="main" depends="clean,run"/>
+
+</project>
